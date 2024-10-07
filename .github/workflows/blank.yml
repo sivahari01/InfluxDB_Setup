@@ -14,10 +14,12 @@ jobs:
           curl -fsSL https://get.docker.com -o get-docker.sh
           sudo sh get-docker.sh
 
-      # Step 3: Run InfluxDB container
-      - name: Run InfluxDB Container
+      # Step 3: Run InfluxDB container with persistent volume
+      - name: Run InfluxDB Container with Volume
         run: |
-          docker run -d -p 8086:8086 --name=influxdb influxdb
+          docker run -d -p 8086:8086 --name=influxdb \
+          -v ${{ github.workspace }}/influxdb_data:/var/lib/influxdb \
+          influxdb
 
       # Step 4: Install Ngrok
       - name: Install Ngrok
@@ -47,4 +49,25 @@ jobs:
         run: |
           NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r ".tunnels[0].public_url")
           echo "Your public InfluxDB URL is: $NGROK_URL"
-          sleep 21600            
+          sleep 21600
+
+      # Step 9: Upload InfluxDB data as artifact periodically (Backup 1)
+      - name: Upload InfluxDB Data as Artifact (Backup 1)
+        uses: actions/upload-artifact@v3
+        with:
+          name: influxdb-data-backup-1
+          path: influxdb_data
+
+      # Step 10: Run periodic artifact uploads (Backup 2)
+      - name: Upload InfluxDB Data as Artifact (Backup 2)
+        uses: actions/upload-artifact@v3
+        with:
+          name: influxdb-data-backup-2
+          path: influxdb_data
+
+      # Final Step: Upload final InfluxDB data as artifact
+      - name: Upload InfluxDB Data as Final Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: influxdb-data-final
+          path: influxdb_data
