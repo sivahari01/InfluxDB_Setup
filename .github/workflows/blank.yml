@@ -19,24 +19,33 @@ jobs:
         run: |
           docker run -d -p 8086:8086 --name=influxdb influxdb
 
-      # Step 4: Install Localtunnel
-      - name: Install Localtunnel
+      # Step 4: Install PageKite
+      - name: Install PageKite
         run: |
-          npm install -g localtunnel
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install pagekite
 
-      # Step 5: Expose InfluxDB using Localtunnel
-      - name: Expose InfluxDB with Localtunnel
+      # Step 5: Expose InfluxDB using PageKite
+      - name: Expose InfluxDB using PageKite
         run: |
-          lt --port 8086 --subdomain your-subdomain-name --local-host 127.0.0.1 > lt.log &
-          sleep 5  # Wait for Localtunnel to establish the connection
+          nohup pagekite.py 8086 myinfluxdb.pagekite.me > pagekite.log 2>&1 &  # Replace 'myinfluxdb' with your desired subdomain
+          sleep 10  # Wait for PageKite to initialize
 
-      # Step 6: Fetch Localtunnel public URL
-      - name: Fetch Localtunnel URL
+      # Step 6: Fetch PageKite public URL
+      - name: Fetch PageKite public URL
         run: |
-          LT_URL=$(grep -o 'https://[a-z]*.loca.lt' lt.log | head -1)
-          echo "Your public InfluxDB URL is: $LT_URL"
-          
-      # Optional: Sleep for a specific time to keep the job running
-      - name: Keep job running
-        run: |
-          sleep 21600  # Adjust the sleep time as needed (6 hours here)
+          echo "Fetching PageKite logs to find public URL..."
+          # Read the log file for the PageKite output
+          if grep -q "connected" pagekite.log; then
+            # Print the log content and extract the URL
+            cat pagekite.log
+            echo "Your InfluxDB is now exposed at http://myinfluxdb.pagekite.me"  # Replace 'myinfluxdb' with your chosen subdomain
+          else
+            echo "PageKite did not start correctly. Check the log file for details."
+            cat pagekite.log
+          fi
+
+      # Step 7: Wait
+      - name: Wait
+        run: sleep 21600  # Sleep for 6 hours
