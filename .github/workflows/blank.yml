@@ -31,6 +31,7 @@ jobs:
           sudo lt --port 8086 --subdomain myuniqueid > lt_output.txt &
           sleep 5  # Wait for LocalTunnel to initialize
           tail -n 10 lt_output.txt  # Print the last 10 lines of output for debugging
+          sudo wget -q -O - https://loca.lt/mytunnelpassword
 
       # Step 6: Fetch LocalTunnel URL from output
       - name: Fetch LocalTunnel URL
