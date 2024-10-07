@@ -1,14 +1,4 @@
-name: Host InfluxDB with Ngrok
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  setup-influxdb:
-    runs-on: ubuntu-latest
-
+runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout repository
       - name: Checkout Repository
