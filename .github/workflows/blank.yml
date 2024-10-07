@@ -1,6 +1,6 @@
 on: [push]
 jobs:
-  jmeter_job:
+  Grafana_host:
     runs-on: ubuntu-latest
 
     steps:
@@ -8,9 +8,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Docker environment
-      - name: Set up Docker
-        run: sudo apt-get install docker.io
+      # Step 2: Install Docker using Docker's official script
+      - name: Install Docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
 
       # Step 3: Run InfluxDB container
       - name: Run InfluxDB Container
