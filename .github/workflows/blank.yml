@@ -47,4 +47,4 @@ jobs:
         run: |
           NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r ".tunnels[0].public_url")
           echo "Your public InfluxDB URL is: $NGROK_URL"
-          sleep 3000000            
+          sleep 21600            
