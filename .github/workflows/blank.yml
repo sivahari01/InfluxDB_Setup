@@ -36,3 +36,4 @@ jobs:
       - name: Fetch LocalTunnel URL
         run: |
           echo "Your LocalTunnel should provide the URL above."
+          sleep 1000
