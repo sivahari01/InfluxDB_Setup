@@ -2,8 +2,8 @@ name: Host InfluxDB with Ngrok
 
 on:
   push:
-    branches:
-      - main
+    paths:
+       -.github/workflows/blank.yml
 
 jobs:
   setup-influxdb:
