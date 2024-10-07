@@ -22,29 +22,20 @@ jobs:
       # Step 4: Install PageKite
       - name: Install PageKite
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install pagekite
+          # Download PageKite binary
+          curl -L https://pagekite.net/dist/pagekite.py -o pagekite.py
+          chmod +x pagekite.py  # Make the script executable
 
       # Step 5: Expose InfluxDB using PageKite
       - name: Expose InfluxDB using PageKite
         run: |
-          nohup pagekite.py 8086 myinfluxdb.pagekite.me > pagekite.log 2>&1 &  # Replace 'myinfluxdb' with your desired subdomain
+          nohup python3 pagekite.py 8086 myinfluxdb.pagekite.me &  # Replace 'myinfluxdb' with your desired subdomain
           sleep 10  # Wait for PageKite to initialize
 
       # Step 6: Fetch PageKite public URL
       - name: Fetch PageKite public URL
         run: |
-          echo "Fetching PageKite logs to find public URL..."
-          # Read the log file for the PageKite output
-          if grep -q "connected" pagekite.log; then
-            # Print the log content and extract the URL
-            cat pagekite.log
-            echo "Your InfluxDB is now exposed at http://myinfluxdb.pagekite.me"  # Replace 'myinfluxdb' with your chosen subdomain
-          else
-            echo "PageKite did not start correctly. Check the log file for details."
-            cat pagekite.log
-          fi
+          echo "Your InfluxDB is now exposed at http://myinfluxdb.pagekite.me"  # Replace 'myinfluxdb' with your chosen subdomain
 
       # Step 7: Wait
       - name: Wait
