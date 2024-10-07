@@ -1,12 +1,6 @@
-name: Host InfluxDB with Ngrok
-
-on:
-  push:
-    paths:
-       -.github/workflows/blank.yml
-
+on: [push]
 jobs:
-  setup-influxdb:
+  jmeter_job:
     runs-on: ubuntu-latest
 
     steps:
