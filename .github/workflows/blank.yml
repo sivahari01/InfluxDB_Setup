@@ -8,7 +8,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Install Docker using Docker's official script
+      # Step 2: Install Docker
       - name: Install Docker
         run: |
           curl -fsSL https://get.docker.com -o get-docker.sh
@@ -40,10 +40,26 @@ jobs:
       - name: Expose InfluxDB using Ngrok
         run: |
           nohup ngrok http 8086 &
-          sleep 10  # Increased sleep to allow Ngrok to fully initialize
+          sleep 5  # Initial wait time for Ngrok to initialize
 
-      # Step 8: Fetch Ngrok public URL
-      - name: Fetch Ngrok public URL
+      # Step 8: Wait for Ngrok to provide a public URL
+      - name: Wait for Ngrok public URL
         run: |
-          NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r ".tunnels[0].public_url")
-          echo "Your public InfluxDB URL is: $NGROK_URL"
+          TIMEOUT=30  # Maximum wait time in seconds
+          ELAPSED=0
+          INTERVAL=2  # Interval to wait before checking again
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r ".tunnels[0].public_url")
+            if [ "$NGROK_URL" != "null" ]; then
+              echo "Your public InfluxDB URL is: $NGROK_URL"
+              break
+            fi
+            echo "Waiting for Ngrok to provide a public URL..."
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          if [ "$NGROK_URL" == "null" ]; then
+            echo "Ngrok did not provide a public URL within $TIMEOUT seconds."
+            exit 1
+          fi
