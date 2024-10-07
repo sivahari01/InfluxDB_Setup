@@ -26,13 +26,14 @@ jobs:
 
       # Step 5: Run LocalTunnel to expose InfluxDB port 8086
       - name: Expose InfluxDB using LocalTunnel
+        id: lt
         run: |
-          lt --port 8086 --subdomain myuniqueid &  # Replace 'myuniqueid' with your desired subdomain
-          sleep 10  # Wait for LocalTunnel to initialize
-
-      # Step 6: Fetch LocalTunnel URL
+          lt --port 8086 --subdomain myuniqueid > lt_output.txt &
+          sleep 5  # Wait for LocalTunnel to initialize
+          tail -n 10 lt_output.txt  # Print the last 10 lines of output for debugging
+          
+      # Step 6: Fetch LocalTunnel URL from output
       - name: Fetch LocalTunnel URL
         run: |
-          LT_URL=$(curl -s http://localtunnel.me/api/tunnels | jq -r ".tunnels[0].public_url")
-          echo "Your public InfluxDB URL is: $LT_URL"
-          sleep 21600
+          echo "Your LocalTunnel should provide the URL above."
+          sleep 1000
