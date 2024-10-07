@@ -1,4 +1,4 @@
-name: Host Grafana with Ngrok
+name: Host InfluxDB with Ngrok
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  setup-grafana:
+  setup-influxdb:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,10 +18,10 @@ jobs:
       - name: Set up Docker
         run: sudo apt-get install docker.io
 
-      # Step 3: Run Grafana container
-      - name: Run Grafana Container
+      # Step 3: Run InfluxDB container
+      - name: Run InfluxDB Container
         run: |
-          docker run -d -p 3000:3000 --name=grafana grafana/grafana
+          docker run -d -p 8086:8086 --name=influxdb influxdb
 
       # Step 4: Install Ngrok
       - name: Install Ngrok
@@ -31,13 +31,18 @@ jobs:
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
           sudo apt-get update && sudo apt-get install ngrok
 
-      # Step 5: Run Ngrok to expose Grafana
-      - name: Expose Grafana using Ngrok
-        run: |
-          nohup ngrok http 3000 &
-          sleep 5
-          curl -s http://localhost:4040/api/tunnels | jq -r ".tunnels[0].public_url"
+      # Step 5: Install jq to parse JSON
+      - name: Install jq
+        run: sudo apt-get install jq
 
-      # Step 6: Output the public URL
-      - name: Show Grafana URL
-        run: echo "Your public Grafana URL is:"
+      # Step 6: Run Ngrok to expose InfluxDB port 8086
+      - name: Expose InfluxDB using Ngrok
+        run: |
+          nohup ngrok http 8086 &
+          sleep 5
+
+      # Step 7: Fetch Ngrok public URL
+      - name: Fetch Ngrok public URL
+        run: |
+          NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r ".tunnels[0].public_url")
+          echo "Your public InfluxDB URL is: $NGROK_URL"
