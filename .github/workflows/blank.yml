@@ -17,23 +17,22 @@ jobs:
       # Step 3: Run InfluxDB container
       - name: Run InfluxDB Container
         run: |
-          docker run -d -p 8086:8086 --name=influxdb influxdb
+          sudo docker run -d -p 8086:8086 --name=influxdb influxdb
 
       # Step 4: Install LocalTunnel
       - name: Install LocalTunnel
         run: |
-          npm install -g localtunnel
+          sudo npm install -g localtunnel
 
       # Step 5: Run LocalTunnel to expose InfluxDB port 8086
       - name: Expose InfluxDB using LocalTunnel
         id: lt
         run: |
-          lt --port 8086 --subdomain myuniqueid > lt_output.txt &
+          sudo lt --port 8086 --subdomain myuniqueid > lt_output.txt &
           sleep 5  # Wait for LocalTunnel to initialize
           tail -n 10 lt_output.txt  # Print the last 10 lines of output for debugging
-          
+
       # Step 6: Fetch LocalTunnel URL from output
       - name: Fetch LocalTunnel URL
         run: |
           echo "Your LocalTunnel should provide the URL above."
-          sleep 1000
