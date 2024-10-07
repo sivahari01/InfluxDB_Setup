@@ -1,4 +1,14 @@
-runs-on: ubuntu-latest
+name: Host InfluxDB with Ngrok
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup-influxdb:
+    runs-on: ubuntu-latest
+
     steps:
       # Step 1: Checkout repository
       - name: Checkout Repository
@@ -29,7 +39,7 @@ runs-on: ubuntu-latest
       - name: Expose InfluxDB using Ngrok
         run: |
           nohup ngrok http 8086 &
-          sleep 5
+          sleep 10  # Increased sleep to allow Ngrok to fully initialize
 
       # Step 7: Fetch Ngrok public URL
       - name: Fetch Ngrok public URL
