@@ -1,6 +1,6 @@
 on: [push]
 jobs:
-  jmeter_job:
+  Influx_DB:
     runs-on: ubuntu-latest
 
     steps:
