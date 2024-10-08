@@ -3,7 +3,7 @@ jobs:
   Influx_DB:
     runs-on: ubuntu-latest
 
-    steps:
+    steps: 
       # Step 1: Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v3
